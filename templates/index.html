@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="AI-powered breast cancer risk prediction tool using IBM AutoAI and Watson Machine Learning. Educational use only."/>
+  <meta name="robots" content="noindex, nofollow"/>
+  <title>BreastCare AI — Risk Prediction &amp; Prevention</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+
+  <!-- Bootstrap Icons CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+
+  <!-- Our CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}"/>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     NAVBAR
+═══════════════════════════════════════════════════════════ -->
+<nav class="navbar" role="navigation" aria-label="Main navigation">
+  <a href="#" class="navbar-brand">
+    <span class="brand-icon" aria-hidden="true">🎗</span>
+    BreastCare AI
+  </a>
+
+  <!-- Desktop nav links -->
+  <ul class="nav-links" id="navLinks" role="list">
+    <li><a href="#predict-section">🔬 Predict</a></li>
+    <li><a href="#features-section">📊 Features</a></li>
+    <li><a href="#prevention-section">💚 Prevention</a></li>
+    <li><a href="#risk-factors-section">⚠️ Risk Factors</a></li>
+    <li><a href="#history-section">🕑 History</a></li>
+    <li><a href="#faq-section">❓ FAQ</a></li>
+  </ul>
+
+  <div class="flex items-center gap-2">
+    <span class="ibm-badge"><span class="dot"></span>IBM AutoAI</span>
+    <button class="theme-toggle" id="themeToggle" title="Toggle dark mode" aria-label="Toggle dark/light mode">🌙</button>
+    <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════
+     HERO
+═══════════════════════════════════════════════════════════ -->
+<section class="hero" role="banner">
+  <div class="hero-content">
+    <span class="hero-badge">🎗 Powered by IBM AutoAI</span>
+    <h1>Breast Cancer Risk Prediction</h1>
+    <p>Enter tumor cell measurements to receive an AI-powered prediction from our IBM AutoAI model trained on the Wisconsin Breast Cancer Diagnosis dataset.</p>
+    <div class="hero-cta">
+      <button class="btn btn-white btn-lg" id="btnHeroCta">🔬 Start Prediction</button>
+      <a href="#features-section" class="btn btn-lg" style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.4)">📊 Explore Features</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     DISCLAIMER BANNER
+═══════════════════════════════════════════════════════════ -->
+<section class="section-sm" style="background:var(--warning-light);border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div class="disclaimer" role="alert">
+      <span class="disc-icon">⚠️</span>
+      <p>
+        <strong>Educational Disclaimer:</strong> This tool is built for <strong>educational and research purposes only</strong>.
+        It is <strong>NOT a medical device</strong>, does not provide clinical diagnoses, and should never replace professional
+        medical advice, examination, or diagnosis. Always consult a qualified healthcare professional for any health concerns.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     STATS BAR
+═══════════════════════════════════════════════════════════ -->
+<section class="section-sm section-alt">
+  <div class="container">
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:var(--primary-light)">🔬</div>
+        <div class="stat-value text-primary-c">30</div>
+        <div class="stat-label">Input Features</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:var(--success-light)">🧬</div>
+        <div class="stat-value text-success">569</div>
+        <div class="stat-label">Training Samples</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:var(--warning-light)">🤖</div>
+        <div class="stat-value" style="color:var(--warning)">AutoAI</div>
+        <div class="stat-label">IBM Pipeline</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:var(--danger-light)">🎯</div>
+        <div class="stat-value text-danger">2</div>
+        <div class="stat-label">Classes (B / M)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PREDICTION FORM
+═══════════════════════════════════════════════════════════ -->
+<section class="section" id="predict-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge">🔬 ML Prediction</span>
+      <h2>Tumor Cell Measurement Analysis</h2>
+      <p>Input the 30 FNA (Fine Needle Aspirate) computed features across <em>mean</em>, <em>standard error</em>, and <em>worst</em> measurements.</p>
+      <div class="divider"></div>
+    </div>
+
+    <!-- Quick-fill buttons -->
+    <div class="flex flex-wrap gap-2 justify-center mb-4">
+      <button class="btn btn-success btn-sm" id="btnSampleBenign">✅ Load Benign Sample</button>
+      <button class="btn btn-danger btn-sm" id="btnSampleMalignant">⚠️ Load Malignant Sample</button>
+      <button class="btn btn-outline btn-sm" id="btnReset">🔄 Clear Form</button>
+    </div>
+
+    <!-- Two-column layout: form + radar -->
+    <div style="display:grid;grid-template-columns:1fr minmax(0,300px);gap:2rem;align-items:start;" class="form-layout">
+
+      <!-- FORM CARD -->
+      <div class="card">
+        <div class="card-header">
+          <i class="bi bi-clipboard2-pulse"></i> Enter Measurement Values
+          <span class="text-muted text-xs" style="margin-left:auto">* All fields required</span>
+        </div>
+        <div class="card-body">
+
+          <!-- Alert -->
+          <div id="formAlert" class="hidden"></div>
+
+          <form id="predictionForm" method="POST" action="/predict" novalidate>
+
+            <!-- Tabs: Mean / SE / Worst -->
+            <div data-tabs="formTabs">
+              <div class="tab-nav" role="tablist">
+                <button type="button" class="tab-btn active" data-tab="mean" role="tab">📏 Mean</button>
+                <button type="button" class="tab-btn" data-tab="se" role="tab">📐 Std Error</button>
+                <button type="button" class="tab-btn" data-tab="worst" role="tab">⚡ Worst</button>
+              </div>
+
+              <!-- ── MEAN ─────────────────────────── -->
+              <div class="tab-pane active" data-tab="mean">
+                <div class="grid-2">
+                  {% for field_name, label, f_min, f_max, step, default, unit in form_fields if '_mean' in field_name %}
+                  <div class="form-group">
+                    <label class="form-label" for="{{ field_name|replace(' ','_') }}">
+                      {{ label }}
+                      {% if unit %}<span class="text-muted text-xs">({{ unit }})</span>{% endif %}
+                    </label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="{{ field_name|replace(' ','_') }}"
+                      name="{{ field_name }}"
+                      min="{{ f_min }}"
+                      max="{{ f_max }}"
+                      step="{{ step }}"
+                      value="{{ default }}"
+                      placeholder="{{ default }}"
+                      required
+                    />
+                    <div class="form-range-wrap mt-1">
+                      <input type="range"
+                        class="form-range range-slider"
+                        data-input="{{ field_name|replace(' ','_') }}"
+                        min="{{ f_min }}" max="{{ f_max }}" step="{{ step }}" value="{{ default }}"/>
+                      <span class="range-val text-xs text-muted">{{ default }}</span>
+                    </div>
+                    <div class="invalid-feedback"></div>
+                    <div class="form-hint">Range: {{ f_min }} – {{ f_max }}</div>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div><!-- /mean -->
+
+              <!-- ── SE ──────────────────────────── -->
+              <div class="tab-pane" data-tab="se">
+                <div class="grid-2">
+                  {% for field_name, label, f_min, f_max, step, default, unit in form_fields if '_se' in field_name %}
+                  <div class="form-group">
+                    <label class="form-label" for="{{ field_name|replace(' ','_') }}_se">
+                      {{ label }}
+                      {% if unit %}<span class="text-muted text-xs">({{ unit }})</span>{% endif %}
+                    </label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="{{ field_name|replace(' ','_') }}_se"
+                      name="{{ field_name }}"
+                      min="{{ f_min }}"
+                      max="{{ f_max }}"
+                      step="{{ step }}"
+                      value="{{ default }}"
+                      placeholder="{{ default }}"
+                      required
+                    />
+                    <div class="form-range-wrap mt-1">
+                      <input type="range"
+                        class="form-range range-slider"
+                        data-input="{{ field_name|replace(' ','_') }}_se"
+                        min="{{ f_min }}" max="{{ f_max }}" step="{{ step }}" value="{{ default }}"/>
+                      <span class="range-val text-xs text-muted">{{ default }}</span>
+                    </div>
+                    <div class="invalid-feedback"></div>
+                    <div class="form-hint">Range: {{ f_min }} – {{ f_max }}</div>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div><!-- /se -->
+
+              <!-- ── WORST ──────────────────────── -->
+              <div class="tab-pane" data-tab="worst">
+                <div class="grid-2">
+                  {% for field_name, label, f_min, f_max, step, default, unit in form_fields if '_worst' in field_name %}
+                  <div class="form-group">
+                    <label class="form-label" for="{{ field_name|replace(' ','_') }}_w">
+                      {{ label }}
+                      {% if unit %}<span class="text-muted text-xs">({{ unit }})</span>{% endif %}
+                    </label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="{{ field_name|replace(' ','_') }}_w"
+                      name="{{ field_name }}"
+                      min="{{ f_min }}"
+                      max="{{ f_max }}"
+                      step="{{ step }}"
+                      value="{{ default }}"
+                      placeholder="{{ default }}"
+                      required
+                    />
+                    <div class="form-range-wrap mt-1">
+                      <input type="range"
+                        class="form-range range-slider"
+                        data-input="{{ field_name|replace(' ','_') }}_w"
+                        min="{{ f_min }}" max="{{ f_max }}" step="{{ step }}" value="{{ default }}"/>
+                      <span class="range-val text-xs text-muted">{{ default }}</span>
+                    </div>
+                    <div class="invalid-feedback"></div>
+                    <div class="form-hint">Range: {{ f_min }} – {{ f_max }}</div>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div><!-- /worst -->
+
+            </div><!-- /data-tabs -->
+
+            <div class="mt-4">
+              <button type="submit" class="btn btn-primary btn-lg btn-block" id="submitBtn">
+                🔬 Analyze &amp; Predict
+              </button>
+            </div>
+
+          </form>
+        </div><!-- /card-body -->
+      </div><!-- /form card -->
+
+      <!-- RADAR SIDE PANEL -->
+      <div style="position:sticky;top:90px">
+        <div class="card mb-2">
+          <div class="card-header"><i class="bi bi-radar"></i> Feature Profile (Mean)</div>
+          <div class="card-body text-center">
+            <div class="radar-wrap">
+              <svg id="radarSvg" viewBox="0 0 300 300" width="100%" role="img" aria-label="Radar chart of mean feature values"></svg>
+            </div>
+            <p class="text-xs text-muted mt-2">Updates live as you adjust mean values</p>
+          </div>
+        </div>
+
+        <!-- Prediction Result Card (inline) -->
+        <div id="result-section" class="hidden">
+          <div id="resultCard" class="result-card">
+            <div class="result-icon" id="resultIcon">✅</div>
+            <div class="result-label" id="resultLabel">Benign</div>
+            <p class="mt-2 text-sm" id="resultDesc"></p>
+
+            <div id="confidenceSection" class="confidence-bar-wrap hidden">
+              <div class="flex justify-between text-xs text-muted mb-1">
+                <span>Model Confidence</span>
+                <span id="confidenceValue">—</span>
+              </div>
+              <div class="confidence-bar-bg">
+                <div class="confidence-bar-fill benign" id="confidenceBar" style="width:0%"></div>
+              </div>
+            </div>
+
+            <div id="probChartSection" class="hidden mt-3">
+              <div id="probCanvas" class="text-center"></div>
+              <div id="probLegend" class="text-center mt-1"></div>
+            </div>
+          </div>
+
+          <p class="text-xs text-muted text-center mt-2">
+            ⚠️ For educational purposes only — not a medical diagnosis
+          </p>
+        </div>
+
+      </div><!-- /radar panel -->
+    </div><!-- /grid -->
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FEATURES DASHBOARD
+═══════════════════════════════════════════════════════════ -->
+<section class="section section-alt" id="features-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge">📊 Feature Dashboard</span>
+      <h2>Understanding the Input Features</h2>
+      <p>These 10 key cell nucleus properties are measured from digitized FNA images and provide critical diagnostic signals.</p>
+      <div class="divider"></div>
+    </div>
+
+    <div class="feature-grid">
+      {% for key, meta in feature_meta.items() %}
+      <div class="feature-card">
+        <div class="fc-icon">
+          <i class="bi bi-{{ meta.icon }}"></i>
+        </div>
+        <h4>{{ meta.label }}{% if meta.unit %} <span class="text-xs text-muted">({{ meta.unit }})</span>{% endif %}</h4>
+        <p>{{ meta.desc }}</p>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Feature importance explanation -->
+    <div class="card mt-4">
+      <div class="card-header"><i class="bi bi-bar-chart-line"></i> How Features Relate to Diagnosis</div>
+      <div class="card-body">
+        <div class="grid-3">
+          <div style="background:var(--danger-light);border:1px solid var(--danger);border-radius:var(--radius-sm);padding:1rem">
+            <h4 style="color:var(--danger);font-size:.9rem;margin-bottom:.5rem">🔴 High-Risk Indicators</h4>
+            <ul style="font-size:.82rem;color:var(--text-secondary);padding-left:1rem;line-height:1.8">
+              <li>Large radius &amp; area (worst)</li>
+              <li>High concavity values</li>
+              <li>Elevated compactness</li>
+              <li>Many concave points</li>
+            </ul>
+          </div>
+          <div style="background:var(--success-light);border:1px solid var(--success);border-radius:var(--radius-sm);padding:1rem">
+            <h4 style="color:var(--success);font-size:.9rem;margin-bottom:.5rem">🟢 Benign Indicators</h4>
+            <ul style="font-size:.82rem;color:var(--text-secondary);padding-left:1rem;line-height:1.8">
+              <li>Smaller radius mean</li>
+              <li>Low concavity &amp; compactness</li>
+              <li>Smooth perimeter</li>
+              <li>Symmetric nucleus shape</li>
+            </ul>
+          </div>
+          <div style="background:var(--info-light);border:1px solid var(--info);border-radius:var(--radius-sm);padding:1rem">
+            <h4 style="color:var(--info);font-size:.9rem;margin-bottom:.5rem">ℹ️ Measurement Types</h4>
+            <ul style="font-size:.82rem;color:var(--text-secondary);padding-left:1rem;line-height:1.8">
+              <li><b>Mean:</b> Average across cells</li>
+              <li><b>SE:</b> Std. error of the mean</li>
+              <li><b>Worst:</b> Largest 3 values mean</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     EARLY DETECTION TIPS
+═══════════════════════════════════════════════════════════ -->
+<section class="section" id="prevention-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge">💚 Prevention &amp; Early Detection</span>
+      <h2>Protecting Your Health</h2>
+      <p>Early detection significantly improves survival rates. Know your screening options and stay proactive.</p>
+      <div class="divider"></div>
+    </div>
+
+    <div class="tips-grid">
+      <div class="tip-card">
+        <span class="tip-icon">🩺</span>
+        <h4>Regular Mammograms</h4>
+        <p>Women 40+ should have annual mammograms. Early imaging catches tumors before symptoms appear.</p>
+      </div>
+      <div class="tip-card">
+        <span class="tip-icon">🤲</span>
+        <h4>Self-Examination</h4>
+        <p>Perform monthly breast self-exams to identify new lumps, skin changes, or nipple discharge.</p>
+      </div>
+      <div class="tip-card">
+        <span class="tip-icon">🥗</span>
+        <h4>Healthy Diet</h4>
+        <p>Eat fruits, vegetables, and whole grains. Limit processed foods and alcohol consumption.</p>
+      </div>
+      <div class="tip-card">
+        <span class="tip-icon">🏃</span>
+        <h4>Physical Activity</h4>
+        <p>At least 150 min of moderate exercise per week can reduce breast cancer risk by up to 10–20%.</p>
+      </div>
+      <div class="tip-card">
+        <span class="tip-icon">🚭</span>
+        <h4>Avoid Tobacco</h4>
+        <p>Smoking is linked to increased risk. Quitting at any age reduces cancer risk substantially.</p>
+      </div>
+      <div class="tip-card">
+        <span class="tip-icon">🧬</span>
+        <h4>Genetic Counseling</h4>
+        <p>BRCA1/BRCA2 carriers have higher risk. Genetic testing helps personalize your prevention plan.</p>
+      </div>
+      <div class="tip-card">
+        <span class="tip-icon">🌙</span>
+        <h4>Quality Sleep</h4>
+        <p>Adequate sleep supports immune function and hormone regulation, both linked to cancer risk.</p>
+      </div>
+      <div class="tip-card">
+        <span class="tip-icon">👩‍⚕️</span>
+        <h4>Clinical Exams</h4>
+        <p>Discuss your risk with a doctor every 1–3 years in your 20s–30s, annually from age 40.</p>
+      </div>
+    </div>
+
+    <!-- Awareness Statistics -->
+    <div class="card mt-4">
+      <div class="card-header"><i class="bi bi-graph-up"></i> Global Breast Cancer Awareness</div>
+      <div class="card-body">
+        <div class="grid-3">
+          <div class="text-center" style="padding:1rem">
+            <div style="font-size:2rem;font-weight:800;color:var(--danger)">2.3M</div>
+            <div class="text-sm text-muted">New cases diagnosed worldwide in 2022</div>
+          </div>
+          <div class="text-center" style="padding:1rem;border-left:1px solid var(--border);border-right:1px solid var(--border)">
+            <div style="font-size:2rem;font-weight:800;color:var(--success)">99%</div>
+            <div class="text-sm text-muted">5-year survival rate when detected at Stage I</div>
+          </div>
+          <div class="text-center" style="padding:1rem">
+            <div style="font-size:2rem;font-weight:800;color:var(--primary)">40%</div>
+            <div class="text-sm text-muted">Deaths preventable with early detection</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     RISK FACTORS
+═══════════════════════════════════════════════════════════ -->
+<section class="section section-alt" id="risk-factors-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge">⚠️ Risk Factors</span>
+      <h2>Know Your Risk</h2>
+      <p>Understanding modifiable and non-modifiable risk factors empowers you to take action where possible.</p>
+      <div class="divider"></div>
+    </div>
+
+    <div class="grid-2 mb-4">
+      <!-- Modifiable -->
+      <div class="card">
+        <div class="card-header" style="color:var(--warning)">
+          <i class="bi bi-sliders"></i> Modifiable Risk Factors
+          <span class="badge badge-info" style="margin-left:auto">You can change these</span>
+        </div>
+        <div class="card-body">
+          <ul class="risk-list" style="grid-template-columns:1fr">
+            <li class="risk-modifiable"><span class="ri">🍷</span><div><strong>Alcohol Consumption</strong><br><span class="text-xs text-muted">Even 1 drink/day increases risk by 7–10%</span></div></li>
+            <li class="risk-modifiable"><span class="ri">⚖️</span><div><strong>Obesity (post-menopause)</strong><br><span class="text-xs text-muted">Excess body fat raises estrogen levels</span></div></li>
+            <li class="risk-modifiable"><span class="ri">🛋️</span><div><strong>Physical Inactivity</strong><br><span class="text-xs text-muted">Sedentary lifestyle is a recognized risk factor</span></div></li>
+            <li class="risk-modifiable"><span class="ri">💊</span><div><strong>Hormone Therapy (HRT)</strong><br><span class="text-xs text-muted">Prolonged use of combined HRT increases risk</span></div></li>
+            <li class="risk-modifiable"><span class="ri">🚬</span><div><strong>Smoking</strong><br><span class="text-xs text-muted">Particularly harmful for younger women</span></div></li>
+            <li class="risk-modifiable"><span class="ri">🍔</span><div><strong>Poor Diet</strong><br><span class="text-xs text-muted">High-fat diets linked to elevated risk</span></div></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Non-modifiable -->
+      <div class="card">
+        <div class="card-header" style="color:var(--info)">
+          <i class="bi bi-shield-lock"></i> Non-Modifiable Risk Factors
+          <span class="badge badge-danger" style="margin-left:auto">Awareness is key</span>
+        </div>
+        <div class="card-body">
+          <ul class="risk-list" style="grid-template-columns:1fr">
+            <li class="risk-non-modifiable"><span class="ri">🧬</span><div><strong>BRCA1 / BRCA2 Mutations</strong><br><span class="text-xs text-muted">Up to 72% lifetime risk for BRCA1 carriers</span></div></li>
+            <li class="risk-non-modifiable"><span class="ri">👩‍👩‍👧</span><div><strong>Family History</strong><br><span class="text-xs text-muted">First-degree relative doubles the risk</span></div></li>
+            <li class="risk-non-modifiable"><span class="ri">🎂</span><div><strong>Age</strong><br><span class="text-xs text-muted">Risk increases significantly after age 50</span></div></li>
+            <li class="risk-non-modifiable"><span class="ri">🩸</span><div><strong>Dense Breast Tissue</strong><br><span class="text-xs text-muted">Makes tumors harder to detect on mammograms</span></div></li>
+            <li class="risk-non-modifiable"><span class="ri">🌸</span><div><strong>Early Menstruation / Late Menopause</strong><br><span class="text-xs text-muted">Longer estrogen exposure increases risk</span></div></li>
+            <li class="risk-non-modifiable"><span class="ri">🏥</span><div><strong>Previous Benign Conditions</strong><br><span class="text-xs text-muted">Atypical hyperplasia raises future risk</span></div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PREDICTION HISTORY
+═══════════════════════════════════════════════════════════ -->
+<section class="section" id="history-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge">🕑 Prediction History</span>
+      <h2>Session History</h2>
+      <p>All predictions made in this session are listed below. History is stored temporarily and not saved permanently.</p>
+      <div class="divider"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <i class="bi bi-clock-history"></i>
+        Predictions This Session
+        <span class="badge badge-info" style="margin-left:.5rem" id="historyCount">{{ history|length }}</span>
+        <button class="btn btn-outline btn-sm" style="margin-left:auto" id="btnClearHistory">🗑️ Clear</button>
+      </div>
+      <div class="card-body p-0">
+        <div class="history-table-wrap">
+          <table role="table" aria-label="Prediction history">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Timestamp</th>
+                <th>Prediction</th>
+                <th>Confidence</th>
+                <th>Radius Mean</th>
+                <th>Area Mean</th>
+              </tr>
+            </thead>
+            <tbody id="historyBody">
+              {% if history %}
+                {% for entry in history %}
+                <tr>
+                  <td>{{ entry.id }}</td>
+                  <td>{{ entry.timestamp }}</td>
+                  <td>
+                    <span class="badge {% if entry.prediction == 'Malignant' %}badge-danger{% else %}badge-success{% endif %}">
+                      {{ entry.prediction }}
+                    </span>
+                  </td>
+                  <td>{% if entry.confidence is not none %}{{ "%.1f"|format(entry.confidence) }}%{% else %}N/A{% endif %}</td>
+                  <td>{{ entry.radius_mean }}</td>
+                  <td>{{ entry.area_mean }}</td>
+                </tr>
+                {% endfor %}
+              {% else %}
+                <tr id="historyEmpty">
+                  <td colspan="6" class="text-center text-muted" style="padding:2rem">
+                    No predictions yet. Submit the form above to get started.
+                  </td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     IBM AutoAI INFO
+═══════════════════════════════════════════════════════════ -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-badge">🤖 Technology</span>
+      <h2>Powered by IBM AutoAI</h2>
+      <p>This application leverages IBM Watson Machine Learning's AutoAI to automatically select the best ML pipeline.</p>
+      <div class="divider"></div>
+    </div>
+
+    <div class="grid-3">
+      <div class="feature-card">
+        <div class="fc-icon" style="background:#1a1a2e;color:#75baff"><i class="bi bi-cpu"></i></div>
+        <h4>AutoAI Pipeline</h4>
+        <p>IBM AutoAI automatically evaluates multiple algorithms, tunes hyperparameters, and selects the best performing model pipeline on your dataset.</p>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon" style="background:#1a1a2e;color:#75baff"><i class="bi bi-shield-check"></i></div>
+        <h4>IBM Watson ML</h4>
+        <p>The model is deployed as a REST endpoint via IBM Watson Machine Learning, providing scalable, secure, enterprise-grade inference.</p>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon" style="background:#1a1a2e;color:#75baff"><i class="bi bi-database-check"></i></div>
+        <h4>Wisconsin Dataset</h4>
+        <p>Trained on the UCI Breast Cancer Wisconsin (Diagnostic) Dataset — 569 samples, 30 features, two classes: Malignant (M) and Benign (B).</p>
+      </div>
+    </div>
+
+    <!-- Steps -->
+    <div class="card mt-4">
+      <div class="card-header"><i class="bi bi-diagram-3"></i> How It Works</div>
+      <div class="card-body">
+        <div style="display:flex;flex-wrap:wrap;gap:1rem;align-items:flex-start;justify-content:center">
+          {% for step in [
+            ("1", "Upload Dataset", "Load the Wisconsin CSV to IBM Watson Studio"),
+            ("2", "Run AutoAI", "AutoAI experiments and selects the best pipeline"),
+            ("3", "Deploy Model", "Deploy the top pipeline to a WML deployment space"),
+            ("4", "Call REST API", "This app calls the scoring endpoint with your inputs"),
+            ("5", "Get Prediction", "AutoAI returns Benign (B) or Malignant (M) with probability")
+          ] %}
+          <div style="text-align:center;min-width:130px;max-width:160px">
+            <div style="width:44px;height:44px;border-radius:50%;background:var(--primary);color:#fff;font-weight:800;font-size:1.1rem;display:flex;align-items:center;justify-content:center;margin:0 auto .6rem">{{ step[0] }}</div>
+            <div style="font-weight:700;font-size:.85rem;margin-bottom:.3rem">{{ step[1] }}</div>
+            <div style="font-size:.75rem;color:var(--text-muted)">{{ step[2] }}</div>
+          </div>
+          {% if not loop.last %}
+          <div style="font-size:1.5rem;color:var(--border);margin-top:.75rem">→</div>
+          {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FAQ
+═══════════════════════════════════════════════════════════ -->
+<section class="section" id="faq-section">
+  <div class="container container-sm">
+    <div class="section-header">
+      <span class="section-badge">❓ FAQ</span>
+      <h2>Frequently Asked Questions</h2>
+      <div class="divider"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-body" style="padding:0 1.25rem">
+
+        <div class="accordion-item">
+          <button class="accordion-btn" type="button">
+            What is FNA and where does this data come from?
+            <span class="chevron">▼</span>
+          </button>
+          <div class="accordion-content">
+            <div class="accordion-content-inner">
+              Fine Needle Aspiration (FNA) is a minimally invasive diagnostic procedure where cells are extracted from a breast lump. The Wisconsin dataset digitizes the cell nuclei images and computes 30 features per sample. The dataset was created by Dr. William H. Wolberg at the University of Wisconsin.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-btn" type="button">
+            How accurate is this prediction?
+            <span class="chevron">▼</span>
+          </button>
+          <div class="accordion-content">
+            <div class="accordion-content-inner">
+              IBM AutoAI achieves ~96–98% accuracy on the Wisconsin dataset depending on the pipeline selected. However, this is a research/educational tool. No AI model is infallible. Clinical diagnosis requires physician evaluation, imaging, and often biopsy.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-btn" type="button">
+            What do the "mean", "SE", and "worst" tabs mean?
+            <span class="chevron">▼</span>
+          </button>
+          <div class="accordion-content">
+            <div class="accordion-content-inner">
+              For each FNA image, multiple cell nuclei are measured. <strong>Mean</strong> is the average of all measured nuclei. <strong>SE (Standard Error)</strong> measures spread/variability. <strong>Worst</strong> is the mean of the three largest values — capturing extreme characteristics that may indicate malignancy.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-btn" type="button">
+            Can I use this for a real medical decision?
+            <span class="chevron">▼</span>
+          </button>
+          <div class="accordion-content">
+            <div class="accordion-content-inner">
+              <strong>No.</strong> This tool is strictly for educational and demonstration purposes. It is not a medical device, has not received regulatory approval (FDA/CE), and should never replace professional clinical assessment. Always consult a qualified oncologist or physician.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-btn" type="button">
+            How do I set up my IBM credentials?
+            <span class="chevron">▼</span>
+          </button>
+          <div class="accordion-content">
+            <div class="accordion-content-inner">
+              Copy <code>.env.example</code> to <code>.env</code> and fill in: <code>IBM_API_KEY</code> (from IBM Cloud IAM), <code>IBM_WML_URL</code> (region endpoint), <code>IBM_DEPLOYMENT_ID</code> (from Watson Studio Deployments). See <code>README.md</code> for detailed setup instructions.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item" style="border-bottom:none">
+          <button class="accordion-btn" type="button">
+            Is my data stored or sent to IBM Cloud?
+            <span class="chevron">▼</span>
+          </button>
+          <div class="accordion-content">
+            <div class="accordion-content-inner">
+              Input data is sent to your configured IBM WML deployment endpoint for scoring. Prediction results are stored in your browser session only (server-side session, cleared when you close the browser). No data is persistently stored in a database.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FOOTER
+═══════════════════════════════════════════════════════════ -->
+<footer class="footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <div class="footer-logo">🎗 BreastCare AI</div>
+        <p style="font-size:.82rem;color:var(--text-muted);line-height:1.6">An AI-powered educational tool for breast cancer risk awareness, built with IBM AutoAI and Watson Machine Learning.</p>
+        <div class="mt-2">
+          <span class="ibm-badge"><span class="dot"></span>IBM Cloud Powered</span>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Quick Links</h5>
+        <ul>
+          <li><a href="#predict-section">🔬 Prediction Tool</a></li>
+          <li><a href="#features-section">📊 Feature Dashboard</a></li>
+          <li><a href="#prevention-section">💚 Prevention Tips</a></li>
+          <li><a href="#risk-factors-section">⚠️ Risk Factors</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Resources</h5>
+        <ul>
+          <li><a href="https://www.cancer.org/cancer/types/breast-cancer.html" rel="noopener noreferrer" target="_blank">American Cancer Society</a></li>
+          <li><a href="https://www.breastcancer.org" rel="noopener noreferrer" target="_blank">BreastCancer.org</a></li>
+          <li><a href="https://archive.ics.uci.edu/dataset/17/breast+cancer+wisconsin+diagnostic" rel="noopener noreferrer" target="_blank">UCI Dataset</a></li>
+          <li><a href="https://cloud.ibm.com/docs/watson-machine-learning" rel="noopener noreferrer" target="_blank">IBM WML Docs</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Legal</h5>
+        <ul>
+          <li><a href="#faq-section">Educational Use Only</a></li>
+          <li><a href="#faq-section">Not a Medical Device</a></li>
+          <li><a href="#faq-section">Privacy Notice</a></li>
+        </ul>
+        <div class="mt-3 disclaimer" style="padding:.6rem .8rem">
+          <p style="font-size:.72rem;margin:0">⚠️ This is NOT a substitute for professional medical advice.</p>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2024 BreastCare AI — Educational Demonstration. Built with IBM AutoAI, IBM Watson Machine Learning, and Python Flask.</p>
+      <p class="mt-1">Dataset: Breast Cancer Wisconsin (Diagnostic) — UCI Machine Learning Repository.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay hidden" role="status" aria-live="polite">
+  <div class="loading-spinner-lg"></div>
+  <span>Analyzing with IBM AutoAI…</span>
+</div>
+
+<!-- Sticky CTA -->
+<div class="sticky-cta" aria-label="Quick predict shortcut">
+  <button class="btn btn-primary" id="btnStickyCta" aria-label="Scroll to prediction form">🔬 Predict</button>
+</div>
+
+<!-- JS -->
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
