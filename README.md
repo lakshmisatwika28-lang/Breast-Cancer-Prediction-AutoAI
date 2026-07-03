@@ -23,21 +23,29 @@ An AI-powered web application for breast cancer risk prediction using **IBM Auto
 
 ```
 BreastCancer/
-├── app.py                    # Flask application entry point
-├── requirements.txt          # Python dependencies
-├── .env.example              # Environment variable template
-├── .env                      # Your actual secrets (git-ignored)
+├── app.py                         # Flask application entry point
+├── requirements.txt               # Python dependencies
+├── .env.example                   # Environment variable template
+
+├── Data.csv                       # Breast Cancer Wisconsin dataset
+├── Presentation.pptx              # Project presentation
+├── Python_Notebook.ipynb          # IBM Watson Studio notebook
+├── ProblemStatement.pdf           # Project problem statement
+
 ├── utils/
 │   ├── __init__.py
-│   └── ibm_autoai.py         # IBM WML REST API integration
+│   └── ibm_autoai.py              # IBM WML REST API integration
+
 ├── templates/
-│   └── index.html            # Main Jinja2 template
+│   └── index.html                 # Main Jinja2 template
+
 ├── static/
 │   ├── css/
-│   │   └── styles.css        # Medical theme CSS with dark mode
+│   │   └── styles.css             # Medical theme CSS with dark mode
 │   └── js/
-│       └── main.js           # Form validation, charts, AJAX
-└── README.md
+│       └── main.js                # Form validation, charts, AJAX
+
+└── README.md                      # Project documentation
 ```
 
 ---
