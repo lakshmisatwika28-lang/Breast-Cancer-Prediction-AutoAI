@@ -45,6 +45,8 @@ BreastCancer/
 │   └── js/
 │       └── main.js                # Form validation, charts, AJAX
 
+└── .gitignore
+└── Procfile
 └── README.md                      # Project documentation
 ```
 
